@@ -1,5 +1,4 @@
-import 'dart:math';
-
+import 'utils.dart';
 import 'package:flutter/material.dart';
 
 class StickyFloatButton extends StatefulWidget {
@@ -29,19 +28,15 @@ class _StickyFloatButtonState extends State<StickyFloatButton> {
 
   Duration _duration = Duration.zero;
 
-  late _FloatItem _child;
-
-  Size get childSize => _child.ofSize(context) ?? Size.zero;
-
-  Offset get childCenter => Offset(childSize.width / 2, childSize.height / 2);
+  Size get childSize => context.size ?? Size.zero;
 
   Rect get playGround {
     final _padding = widget.padding;
     final _screen = MediaQuery.of(context).size;
     final _width = _screen.width - childSize.width;
-    final _height = _screen.height -
-        childSize.height -
-        Scaffold.of(context).appBarMaxHeight!;
+
+    final _appbarHeight = Scaffold.of(context).appBarMaxHeight ?? 0.0;
+    final _height = _screen.height - childSize.height - _appbarHeight;
     return Rect.fromLTWH(
       (childSize.width / 2) + _padding.left,
       (childSize.height / 2) + _padding.top,
@@ -53,8 +48,7 @@ class _StickyFloatButtonState extends State<StickyFloatButton> {
   @override
   void initState() {
     super.initState();
-    _child = _FloatItem(child: widget.child);
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       _jumpToPosition(widget.initPosition);
     });
   }
@@ -69,25 +63,12 @@ class _StickyFloatButtonState extends State<StickyFloatButton> {
 
   void onDragEnd(_) {
     _duration = widget.stickyDuration;
-    final _alignList = [
-      playGround.topLeft,
-      playGround.topCenter,
-      playGround.topRight,
-      playGround.centerLeft,
-      playGround.center,
-      playGround.centerRight,
-      playGround.bottomLeft,
-      playGround.bottomCenter,
-      playGround.bottomRight,
-    ];
-    final distanceList = _alignList.map((e) => (offset - e).distance).toList();
-    final minValue = distanceList.reduce(min);
-    final minIndex = distanceList.indexWhere((element) => element == minValue);
-    _jumpToOffset(_alignList[minIndex]);
+    _jumpToOffset(playGround.nearestWith(offset));
   }
 
   void _jumpToOffset(Offset offset) {
-    _offsetNotifier.value = offset - childCenter;
+    final _childCenter = Offset(childSize.width / 2, childSize.height / 2);
+    _offsetNotifier.value = offset - _childCenter;
   }
 
   void _jumpToPosition(Alignment alignment) {
@@ -114,25 +95,5 @@ class _StickyFloatButtonState extends State<StickyFloatButton> {
         );
       },
     );
-  }
-}
-
-class _FloatItem extends StatefulWidget {
-  const _FloatItem({required this.child});
-
-  Size? ofSize(BuildContext context) {
-    return context.size;
-  }
-
-  final Widget child;
-
-  @override
-  State<_FloatItem> createState() => _FloatItemState();
-}
-
-class _FloatItemState extends State<_FloatItem> {
-  @override
-  Widget build(BuildContext context) {
-    return widget.child;
   }
 }
