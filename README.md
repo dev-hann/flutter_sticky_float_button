@@ -2,9 +2,9 @@
 
 A Flutter implementation of sticky float button.
 
-![screenShot](https://user-images.githubusercontent.com/54878755/133913574-5ece6476-0127-4e51-99c0-f3a35baf155f.gif)
 
 ## Getting started
+
 
 In the `pubspec.yaml` of your flutter project, add the following dependency:
 
