@@ -8,7 +8,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -29,6 +28,9 @@ class StickyFloatExample extends StatefulWidget {
 }
 
 class _StickyFloatExampleState extends State<StickyFloatExample> {
+  final StickyFloatButtonController _controller =
+      StickyFloatButtonController(initPosition: Alignment.topRight);
+
   AppBar _appBar() {
     return AppBar(
       title: const Text("Sticky Float Example"),
@@ -36,18 +38,25 @@ class _StickyFloatExampleState extends State<StickyFloatExample> {
   }
 
   Widget _body() {
-    return const Center(
-      child: Text("Sticky"),
+    return Center(
+      child: GestureDetector(
+          onTap: () {
+            _controller.jumpToPosition(Alignment.center);
+          },
+          child: const Text("Sticky")),
     );
   }
 
   Widget _floatButton() {
-    return const StickyFloatButton(
-      child: CircleAvatar(
-        backgroundColor: Colors.grey,
-        child: Icon(
-          Icons.add,
-          color: Colors.white,
+    return StickyFloatButton(
+      controller: _controller,
+      child: const FloatItem(
+        child: CircleAvatar(
+          backgroundColor: Colors.grey,
+          child: Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
         ),
       ),
     );
