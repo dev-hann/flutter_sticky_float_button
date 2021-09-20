@@ -1,6 +1,6 @@
 name: sticky_float_button
 description: A Flutter implementation of sticky float button.
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/yoehwan/flutter_sticky_float_button
 
 environment:
