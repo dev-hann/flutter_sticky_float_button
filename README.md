@@ -39,7 +39,6 @@ You can use 'Stack' to be located under 'Body' it.
  class MyApp extends StatelessWidget {
    const MyApp({Key? key}) : super(key: key);
  
-   // This widget is the root of your application.
    @override
    Widget build(BuildContext context) {
      return MaterialApp(
@@ -60,6 +59,9 @@ You can use 'Stack' to be located under 'Body' it.
  }
  
  class _StickyFloatExampleState extends State<StickyFloatExample> {
+   final StickyFloatButtonController _controller =
+       StickyFloatButtonController(initPosition: Alignment.topRight);
+ 
    AppBar _appBar() {
      return AppBar(
        title: const Text("Sticky Float Example"),
@@ -67,18 +69,25 @@ You can use 'Stack' to be located under 'Body' it.
    }
  
    Widget _body() {
-     return const Center(
-       child: Text("Sticky"),
+     return Center(
+       child: GestureDetector(
+           onTap: () {
+             _controller.jumpToPosition(Alignment.center);
+           },
+           child: const Text("Sticky")),
      );
    }
  
    Widget _floatButton() {
-     return const StickyFloatButton(
-       child: CircleAvatar(
-         backgroundColor: Colors.grey,
-         child: Icon(
-           Icons.add,
-           color: Colors.white,
+     return StickyFloatButton(
+       controller: _controller,
+       child: const SingleFloatButton(
+         child: CircleAvatar(
+           backgroundColor: Colors.grey,
+           child: Icon(
+             Icons.add,
+             color: Colors.white,
+           ),
          ),
        ),
      );
@@ -101,6 +110,7 @@ You can use 'Stack' to be located under 'Body' it.
      );
    }
  }
+
 ```
 
 
