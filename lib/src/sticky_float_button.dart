@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-
-import 'package:flutter/widgets.dart';
 import 'package:sticky_float_button/src/utils.dart';
 
-enum StickyState {
-  release,
-  dragging,
-}
+import 'sticky_state.dart';
 
 class StickyFloatButtonController extends ChangeNotifier {
   StickyFloatButtonController({
@@ -24,8 +19,8 @@ class StickyFloatButtonController extends ChangeNotifier {
 
   ///
   Duration get stickyDuration {
-    switch (state) {
-      case StickyState.dragging:
+    switch (touchState) {
+      case StickyTouchState.dragging:
         return Duration.zero;
       default:
         return _stickyDuration;
@@ -36,18 +31,21 @@ class StickyFloatButtonController extends ChangeNotifier {
   final Curve stickyAnimation;
 
   ///
-  final ValueNotifier<StickyState> _state = ValueNotifier(StickyState.release);
+  final ValueNotifier<StickyTouchState> _touchState =
+      ValueNotifier(StickyTouchState.release);
 
   ///
-  StickyState get state => _state.value;
+  StickyTouchState get touchState => _touchState.value;
 
   ///
-  set state(StickyState value) {
-    if (_state.value == value) return;
-    _state.value = value;
+  set touchState(StickyTouchState value) {
+    if (_touchState.value == value) return;
+    _touchState.value = value;
+    _updateFloatButton();
   }
 
   ///
+
   final ValueNotifier<bool> _floatButtonNotifier = ValueNotifier(false);
 
   void _updateFloatButton() {
@@ -65,21 +63,22 @@ class StickyFloatButtonController extends ChangeNotifier {
     _updateFloatButton();
   }
 
-  void _onDragStarted(_) {
-    state = StickyState.dragging;
-  }
+  void _onDragStarted(_) {}
 
   void _onDragUpdate(PointerMoveEvent event) {
+    touchState = StickyTouchState.dragging;
     floatButtonOffset += event.delta;
   }
 
   void _onDragEnd(_) {
-    state = StickyState.release;
-    jumpToOffset(playGround.nearestWith(floatButtonOffset));
+    if (touchState == StickyTouchState.dragging) {
+      jumpToOffset(playGround.nearestWith(floatButtonOffset));
+      touchState = StickyTouchState.release;
+    }
   }
 
   void jumpToOffset(Offset offset) {
-    final _childCenter = Offset(childSize / 2, childSize / 2);
+    final _childCenter = Offset(childSize.width / 2, childSize.height / 2);
     floatButtonOffset = offset - _childCenter;
   }
 
@@ -88,11 +87,11 @@ class StickyFloatButtonController extends ChangeNotifier {
   }
 
   late Rect playGround;
-  late double childSize;
+  late Size childSize;
 
   void _init({
     required Rect playGround,
-    required double childSize,
+    required Size childSize,
   }) {
     this.playGround = playGround;
     this.childSize = childSize;
@@ -104,13 +103,11 @@ class StickyFloatButton extends StatefulWidget {
     Key? key,
     required this.child,
     this.controller,
-    this.items = const [],
-    this.padding = const EdgeInsets.all(16.0),
+    this.margin = const EdgeInsets.all(16.0),
   }) : super(key: key);
   final StickyFloatButtonController? controller;
-  final FloatItem child;
-  final List<FloatItem> items;
-  final EdgeInsets padding;
+  final Widget child;
+  final EdgeInsets margin;
 
   @override
   _StickyFloatButtonState createState() => _StickyFloatButtonState();
@@ -121,18 +118,18 @@ class _StickyFloatButtonState extends State<StickyFloatButton> {
 
   Offset get offset => controller.floatButtonOffset;
 
-  double get childSize => widget.child.size;
+  Size get childSize => context.size ?? Size.zero;
 
   Rect get playGround {
-    final _padding = widget.padding;
+    final _padding = widget.margin;
     final _screen = MediaQuery.of(context).size;
-    final _width = _screen.width - childSize;
+    final _width = _screen.width - childSize.width;
 
     final _appbarHeight = Scaffold.of(context).appBarMaxHeight ?? 0.0;
-    final _height = _screen.height - childSize - _appbarHeight;
+    final _height = _screen.height - childSize.height - _appbarHeight;
     return Rect.fromLTWH(
-      (childSize / 2) + _padding.left,
-      (childSize / 2) + _padding.top,
+      (childSize.width / 2) + _padding.left,
+      (childSize.height / 2) + _padding.top,
       _width - (_padding.horizontal),
       _height - (_padding.vertical),
     );
@@ -166,26 +163,6 @@ class _StickyFloatButtonState extends State<StickyFloatButton> {
           ),
         );
       },
-    );
-  }
-}
-
-class FloatItem extends StatelessWidget {
-  const FloatItem({
-    Key? key,
-    this.size = 32,
-    required this.child,
-  }) : super(key: key);
-
-  final double size;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: size,
-      height: size,
-      child: child,
     );
   }
 }

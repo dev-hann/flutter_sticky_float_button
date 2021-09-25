@@ -50,13 +50,11 @@ class _StickyFloatExampleState extends State<StickyFloatExample> {
   Widget _floatButton() {
     return StickyFloatButton(
       controller: _controller,
-      child: const FloatItem(
-        child: CircleAvatar(
-          backgroundColor: Colors.grey,
-          child: Icon(
-            Icons.add,
-            color: Colors.white,
-          ),
+      child: const CircleAvatar(
+        backgroundColor: Colors.grey,
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
         ),
       ),
     );
