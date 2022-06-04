@@ -1,5 +1,4 @@
-# sticky_float_button
-
+# Sticky Float Button
 A Flutter implementation of sticky float button.
 
 <img src="https://user-images.githubusercontent.com/54878755/133954084-9e331f39-e74b-45aa-9874-6b70aa89d844.gif" width="324" height="576">
