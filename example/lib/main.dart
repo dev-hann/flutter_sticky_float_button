@@ -28,9 +28,6 @@ class StickyFloatExample extends StatefulWidget {
 }
 
 class _StickyFloatExampleState extends State<StickyFloatExample> {
-  final StickyFloatButtonController _controller =
-      StickyFloatButtonController(initPosition: Alignment.topRight);
-
   AppBar _appBar() {
     return AppBar(
       title: const Text("Sticky Float Example"),
@@ -39,23 +36,16 @@ class _StickyFloatExampleState extends State<StickyFloatExample> {
 
   Widget _body() {
     return Center(
-      child: GestureDetector(
-          onTap: () {
-            _controller.jumpToPosition(Alignment.center);
-          },
-          child: const Text("Sticky")),
+      child: GestureDetector(onTap: () {}, child: const Text("Sticky")),
     );
   }
 
   Widget _floatButton() {
-    return StickyFloatButton(
-      controller: _controller,
-      child: const CircleAvatar(
-        backgroundColor: Colors.grey,
-        child: Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
+    return const CircleAvatar(
+      backgroundColor: Colors.grey,
+      child: Icon(
+        Icons.add,
+        color: Colors.white,
       ),
     );
   }
@@ -64,15 +54,9 @@ class _StickyFloatExampleState extends State<StickyFloatExample> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar(),
-      body: Builder(
-        builder: (context) {
-          return Stack(
-            children: [
-              _body(),
-              _floatButton(),
-            ],
-          );
-        },
+      body: StickyBuilder(
+        stickyButton: _floatButton(),
+        child: _body(),
       ),
     );
   }
